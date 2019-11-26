@@ -1,4 +1,4 @@
-import React, {Component} from 'react';
+import React, {Component, useState, useEffect} from 'react';
 
 import {
   View,
@@ -14,6 +14,52 @@ import {DataTable} from 'react-native-paper';
 import plus from '../assets/plus.png';
 
 import api from '../services/api';
+
+export function navigationOptions({navigation}) {
+  return {
+    headerRight: (
+      <TouchableOpacity
+        style={styles.image}
+        onPress={() => navigation.navigate('New')}>
+        <Image source={plus} />
+      </TouchableOpacity>
+    ),
+  };
+}
+
+export default function Filter({}) {
+  const [pedidos, setPedidos] = useState([]);
+
+  useEffect(() => {
+    api
+      .get('/all')
+      .then(response => {
+        setPedidos(response.data);
+      })
+      .catch(error => {
+        console.log(error);
+      });
+  });
+
+  return (
+    <DataTable>
+      <DataTable.Header>
+        <DataTable.Title>Mesa</DataTable.Title>
+        <DataTable.Title>Total</DataTable.Title>
+      </DataTable.Header>
+      <FlatList
+        data={this.state.pedidos}
+        keyExtractor={pedido => pedido.id}
+        renderItem={({item}) => (
+          <DataTable.Row>
+            <DataTable.Cell>{item.mesa}</DataTable.Cell>
+            <DataTable.Cell>{item.valorTotal}</DataTable.Cell>
+          </DataTable.Row>
+        )}
+      />
+    </DataTable>
+  );
+}
 
 // import { Container } from './styles';
 export default class Filter extends Component {

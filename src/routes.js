@@ -1,17 +1,21 @@
 import {createAppContainer} from 'react-navigation';
 import {createStackNavigator} from 'react-navigation-stack';
 
-import Filter from './pages/Filter';
+import Filter, {navigationOptions} from './pages/Filter';
 import New from './pages/New';
 
 export default createAppContainer(
   createStackNavigator(
     {
-      Filter,
-      New,
+      Filter: {
+        screen: Filter,
+        navigationOptions: navigationOptions,
+      },
+      New: {
+        screen: New,
+      },
     },
     {
-      initialRouteName: 'New',
       defaultNavigationOptions: {
         headerTintColor: '#000',
         headerTitle: 'Art da Pizza',
