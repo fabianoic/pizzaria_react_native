@@ -1,34 +1,15 @@
-import React, {Component, useState, useEffect} from 'react';
+import React, {useState, useEffect} from 'react';
 
-import {
-  View,
-  Text,
-  Image,
-  TouchableOpacity,
-  StyleSheet,
-  FlatList,
-} from 'react-native';
+import {View, Text, TouchableOpacity, StyleSheet, FlatList} from 'react-native';
 
-import {DataTable} from 'react-native-paper';
-
-import plus from '../assets/plus.png';
+import {DataTable, TextInput, Snackbar} from 'react-native-paper';
 
 import api from '../services/api';
 
-export function navigationOptions({navigation}) {
-  return {
-    headerRight: (
-      <TouchableOpacity
-        style={styles.image}
-        onPress={() => navigation.navigate('New')}>
-        <Image source={plus} />
-      </TouchableOpacity>
-    ),
-  };
-}
-
 export default function Filter({}) {
   const [pedidos, setPedidos] = useState([]);
+  const [mesa, setMesa] = useState('');
+  const [visible, setVisible] = useState(false);
 
   useEffect(() => {
     api
@@ -41,71 +22,93 @@ export default function Filter({}) {
       });
   });
 
+  const handleCreate = async e => {
+    if (mesa === '') {
+      setVisible(true);
+    } else {
+      const response = await api
+        .post('/', {
+          mesa,
+          itemPedido: [{}],
+          valorTotal: 0.0,
+        })
+        .catch(error => {
+          console.log(error);
+        });
+      if (response.status === 201) {
+        setPedidos(pedidos);
+      }
+    }
+  };
   return (
-    <DataTable>
-      <DataTable.Header>
-        <DataTable.Title>Mesa</DataTable.Title>
-        <DataTable.Title>Total</DataTable.Title>
-      </DataTable.Header>
-      <FlatList
-        data={this.state.pedidos}
-        keyExtractor={pedido => pedido.id}
-        renderItem={({item}) => (
-          <DataTable.Row>
-            <DataTable.Cell>{item.mesa}</DataTable.Cell>
-            <DataTable.Cell>{item.valorTotal}</DataTable.Cell>
-          </DataTable.Row>
-        )}
-      />
-    </DataTable>
+    <>
+      <Snackbar
+        visible={visible}
+        onDismiss={() => setVisible(false)}
+        duration={3000.0}>
+        Favor informe uma mesa.
+      </Snackbar>
+
+      <View style={styles.container}>
+        <TextInput
+          style={styles.mesa}
+          placeholder="Digite uma mesa - não listada"
+          value={mesa}
+          onChangeText={() => setMesa({mesa})}
+        />
+        <TouchableOpacity
+          style={styles.mesaButton}
+          onPress={() => {
+            handleCreate();
+          }}>
+          <Text style={styles.mesaButtonText}>Adicionar</Text>
+        </TouchableOpacity>
+        <Text />
+        <DataTable>
+          <DataTable.Header>
+            <DataTable.Title>Id</DataTable.Title>
+            <DataTable.Title>Mesa</DataTable.Title>
+            <DataTable.Title>Total</DataTable.Title>
+          </DataTable.Header>
+          <FlatList
+            data={pedidos}
+            keyExtractor={pedido => pedido.toString()}
+            renderItem={({item}) => (
+              <DataTable.Row>
+                <DataTable.Cell>{item.id}</DataTable.Cell>
+                <DataTable.Cell>{item.mesa}</DataTable.Cell>
+                <DataTable.Cell>{item.valorTotal}</DataTable.Cell>
+              </DataTable.Row>
+            )}
+          />
+        </DataTable>
+      </View>
+    </>
   );
 }
 
 // import { Container } from './styles';
-export default class Filter extends Component {
-  static navigationOptions = ({navigation}) => ({
-    headerRight: (
-      <TouchableOpacity
-        style={styles.image}
-        onPress={() => navigation.navigate('New')}>
-        <Image source={plus} />
-      </TouchableOpacity>
-    ),
-  });
-
-  state = {
-    pedidos: [],
-  };
-
-  async componentDidMount() {
-    const response = await api.get('/all');
-    this.setState({pedidos: response.data});
-  }
-
-  render() {
-    return (
-      <DataTable>
-        <DataTable.Header>
-          <DataTable.Title>Mesa</DataTable.Title>
-          <DataTable.Title>Total</DataTable.Title>
-        </DataTable.Header>
-        <FlatList
-          data={this.state.pedidos}
-          keyExtractor={pedido => pedido.id}
-          renderItem={({item}) => (
-            <DataTable.Row>
-              <DataTable.Cell>{item.mesa}</DataTable.Cell>
-              <DataTable.Cell>{item.valorTotal}</DataTable.Cell>
-            </DataTable.Row>
-          )}
-        />
-      </DataTable>
-    );
-  }
-}
 
 const styles = StyleSheet.create({
-  image: {
-    marginRight: 20,
+  container: {
+    flex: 1,
+    paddingHorizontal: 10,
+    paddingTop: 10,
+  },
+  mesa: {
+    marginBottom: 10,
+    borderRadius: 4,
+  },
+  mesaButton: {
+    backgroundColor: '#4682B4',
+    borderRadius: 4,
+    height: 42,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  mesaButtonText: {
+    fontWeight: 'bold',
+    fontSize: 16,
+    color: '#FFF',
   },
 });
