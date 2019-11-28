@@ -1,15 +1,25 @@
 import React, {useState, useEffect} from 'react';
 
-import {View, Text, TouchableOpacity, StyleSheet, FlatList} from 'react-native';
+import {
+  View,
+  TouchableOpacity,
+  StyleSheet,
+  FlatList,
+  Image,
+} from 'react-native';
 
-import {DataTable, TextInput, Snackbar} from 'react-native-paper';
+import {DataTable, Snackbar, Modal, Text, TextInput} from 'react-native-paper';
+
+import plus from '../assets/plus.png';
 
 import api from '../services/api';
+import {gray} from 'ansi-colors';
 
-export default function Filter({}) {
+export default function Filter({navigation}) {
   const [pedidos, setPedidos] = useState([]);
   const [mesa, setMesa] = useState('');
-  const [visible, setVisible] = useState(false);
+  const [snackVisible, setSnackVisible] = useState(false);
+  const [modalVisible, setModalVisible] = useState(false);
 
   useEffect(() => {
     api
@@ -24,7 +34,7 @@ export default function Filter({}) {
 
   const handleCreate = async e => {
     if (mesa === '') {
-      setVisible(true);
+      setSnackVisible(true);
     } else {
       const response = await api
         .post('/', {
@@ -43,72 +53,124 @@ export default function Filter({}) {
   return (
     <>
       <Snackbar
-        visible={visible}
-        onDismiss={() => setVisible(false)}
+        visible={snackVisible}
+        onDismiss={() => setSnackVisible(false)}
         duration={3000.0}>
         Favor informe uma mesa.
       </Snackbar>
-
+      <TouchableOpacity
+        style={styles.mesaButton}
+        onPress={() => {
+          setModalVisible(true);
+        }}>
+        <Text style={styles.addMesaButton}>Adicionar mesa</Text>
+      </TouchableOpacity>
       <View style={styles.container}>
-        <TextInput
-          style={styles.mesa}
-          placeholder="Digite uma mesa - não listada"
-          value={mesa}
-          onChangeText={() => setMesa({mesa})}
-        />
-        <TouchableOpacity
-          style={styles.mesaButton}
-          onPress={() => {
-            handleCreate();
-          }}>
-          <Text style={styles.mesaButtonText}>Adicionar</Text>
-        </TouchableOpacity>
-        <Text />
-        <DataTable>
-          <DataTable.Header>
-            <DataTable.Title>Id</DataTable.Title>
-            <DataTable.Title>Mesa</DataTable.Title>
-            <DataTable.Title>Total</DataTable.Title>
-          </DataTable.Header>
-          <FlatList
-            data={pedidos}
-            keyExtractor={pedido => pedido.toString()}
-            renderItem={({item}) => (
-              <DataTable.Row>
-                <DataTable.Cell>{item.id}</DataTable.Cell>
-                <DataTable.Cell>{item.mesa}</DataTable.Cell>
-                <DataTable.Cell>{item.valorTotal}</DataTable.Cell>
-              </DataTable.Row>
-            )}
-          />
-        </DataTable>
+        <View style={styles.listMesa}>
+          <Text>Mesa 2</Text>
+        </View>
+        <View style={styles.listMesa}>
+          <Text>Mesa 3</Text>
+        </View>
+        <View style={styles.listMesa}>
+          <Text>Mesa 4</Text>
+        </View>
+        <View style={styles.listMesa}>
+          <Text>Mesa 5</Text>
+        </View>
       </View>
+      <Modal
+        style={styles.model}
+        animationType="slide"
+        transparent={false}
+        visible={modalVisible}>
+        <View style={styles.modalView}>
+          <Text style={styles.labelMesa}>Cadastro de mesa </Text>
+          <Text>__________________________________________</Text>
+          <TextInput
+            style={styles.inputMesa}
+            placeholder="Digite uma nova mesa"
+          />
+          <TouchableOpacity
+            style={styles.modalButton}
+            onPress={() => {
+              setModalVisible(true);
+            }}>
+            <Text style={styles.addMesaButton}>Adicionar</Text>
+          </TouchableOpacity>
+          <TouchableOpacity
+            style={styles.modalButton}
+            onPress={() => {
+              setModalVisible(false);
+            }}>
+            <Text style={styles.addMesaButton}>Cancelar</Text>
+          </TouchableOpacity>
+        </View>
+      </Modal>
     </>
   );
 }
 
-// import { Container } from './styles';
-
 const styles = StyleSheet.create({
+  model: {zIndex: 1},
+  modalView: {
+    borderRadius: 8,
+    backgroundColor: 'white',
+    marginHorizontal: 20,
+    paddingHorizontal: 20,
+    width: '85%',
+    height: '75%',
+  },
+  image: {
+    marginRight: 20,
+  },
+  labelMesa: {
+    fontSize: 27,
+    textAlign: 'center',
+    marginTop: 10,
+    fontWeight: 'bold',
+  },
   container: {
     flex: 1,
-    paddingHorizontal: 10,
+    flexDirection: 'row',
+    flexWrap: 'wrap',
     paddingTop: 10,
+    paddingHorizontal: 5,
   },
-  mesa: {
-    marginBottom: 10,
+  listMesa: {
+    height: 100,
+    width: 100,
+    backgroundColor: 'gray',
     borderRadius: 4,
+    marginHorizontal: 5,
+    marginVertical: 5,
   },
+  inputMesa: {marginVertical: 20},
+
   mesaButton: {
     backgroundColor: '#4682B4',
     borderRadius: 4,
-    height: 42,
+    height: '10%',
+    width: '85%',
     justifyContent: 'center',
     alignItems: 'center',
+    marginVertical: 5,
+    marginHorizontal: 20,
   },
-  mesaButtonText: {
+  addMesaButton: {
     fontWeight: 'bold',
     fontSize: 16,
     color: '#FFF',
+  },
+  modalButton: {
+    backgroundColor: '#4682B4',
+    borderRadius: 4,
+    flexDirection: 'row',
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginTop: 10,
+    marginBottom: 5,
+    marginHorizontal: 20,
+    height: '14%',
   },
 });

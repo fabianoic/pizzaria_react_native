@@ -1,19 +1,14 @@
 import {createAppContainer} from 'react-navigation';
 import {createStackNavigator} from 'react-navigation-stack';
 
-import Filter, {navigationOptions} from './pages/Filter';
+import Filter from './pages/Filter';
 import New from './pages/New';
 
 export default createAppContainer(
   createStackNavigator(
     {
-      Filter: {
-        screen: Filter,
-        navigationOptions: navigationOptions,
-      },
-      New: {
-        screen: New,
-      },
+      Filter,
+      New,
     },
     {
       defaultNavigationOptions: {
