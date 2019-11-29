@@ -1,19 +1,10 @@
 import React, {useState, useEffect} from 'react';
 
-import {
-  View,
-  TouchableOpacity,
-  StyleSheet,
-  FlatList,
-  Image,
-} from 'react-native';
+import {View, TouchableOpacity, StyleSheet, FlatList} from 'react-native';
 
-import {DataTable, Snackbar, Modal, Text, TextInput} from 'react-native-paper';
-
-import plus from '../assets/plus.png';
+import {Snackbar, Modal, Text, TextInput} from 'react-native-paper';
 
 import api from '../services/api';
-import {gray} from 'ansi-colors';
 
 export default function Filter({navigation}) {
   const [pedidos, setPedidos] = useState([]);
@@ -23,7 +14,7 @@ export default function Filter({navigation}) {
 
   useEffect(() => {
     api
-      .get('/all')
+      .get('pedido/all')
       .then(response => {
         setPedidos(response.data);
       })
@@ -32,52 +23,38 @@ export default function Filter({navigation}) {
       });
   });
 
-  const handleCreate = async e => {
-    if (mesa === '') {
-      setSnackVisible(true);
-    } else {
-      const response = await api
-        .post('/', {
-          mesa,
-          itemPedido: [{}],
-          valorTotal: 0.0,
-        })
-        .catch(error => {
-          console.log(error);
-        });
-      if (response.status === 201) {
-        setPedidos(pedidos);
-      }
-    }
-  };
   return (
     <>
       <Snackbar
         visible={snackVisible}
         onDismiss={() => setSnackVisible(false)}
-        duration={3000.0}>
-        Favor informe uma mesa.
+        duration={2000.0}>
+        {snackVisible && mesa !== ''
+          ? navigation.navigate('New', {mesa})
+          : 'Favor informe uma mesa.'}
       </Snackbar>
       <TouchableOpacity
         style={styles.mesaButton}
         onPress={() => {
-          setModalVisible(true);
+          navigation.navigate('ProductFilter');
         }}>
         <Text style={styles.addMesaButton}>Adicionar mesa</Text>
       </TouchableOpacity>
       <View style={styles.container}>
-        <View style={styles.listMesa}>
-          <Text>Mesa 2</Text>
-        </View>
-        <View style={styles.listMesa}>
-          <Text>Mesa 3</Text>
-        </View>
-        <View style={styles.listMesa}>
-          <Text>Mesa 4</Text>
-        </View>
-        <View style={styles.listMesa}>
-          <Text>Mesa 5</Text>
-        </View>
+        <FlatList
+          data={pedidos}
+          keyExtractor={(pedido, index) => `list-index-${index}`}
+          renderItem={({item}) => (
+            <TouchableOpacity
+              onPress={() => {
+                navigation.navigate('New', item);
+              }}>
+              <View style={styles.listMesa}>
+                <Text>Mesa {item.mesa}</Text>
+              </View>
+            </TouchableOpacity>
+          )}
+        />
       </View>
       <Modal
         style={styles.model}
@@ -90,11 +67,12 @@ export default function Filter({navigation}) {
           <TextInput
             style={styles.inputMesa}
             placeholder="Digite uma nova mesa"
+            onChangeText={numMesa => setMesa(numMesa)}
           />
           <TouchableOpacity
             style={styles.modalButton}
             onPress={() => {
-              setModalVisible(true);
+              setSnackVisible(true);
             }}>
             <Text style={styles.addMesaButton}>Adicionar</Text>
           </TouchableOpacity>
@@ -112,14 +90,13 @@ export default function Filter({navigation}) {
 }
 
 const styles = StyleSheet.create({
-  model: {zIndex: 1},
   modalView: {
     borderRadius: 8,
     backgroundColor: 'white',
     marginHorizontal: 20,
     paddingHorizontal: 20,
     width: '85%',
-    height: '75%',
+    height: 300,
   },
   image: {
     marginRight: 20,
@@ -131,8 +108,7 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
   },
   container: {
-    flex: 1,
-    flexDirection: 'row',
+    flexDirection: 'column',
     flexWrap: 'wrap',
     paddingTop: 10,
     paddingHorizontal: 5,
@@ -140,10 +116,14 @@ const styles = StyleSheet.create({
   listMesa: {
     height: 100,
     width: 100,
-    backgroundColor: 'gray',
+    backgroundColor: 'pink',
+    borderColor: 'black',
+    borderWidth: 0.75,
     borderRadius: 4,
     marginHorizontal: 5,
     marginVertical: 5,
+    justifyContent: 'center',
+    alignItems: 'center',
   },
   inputMesa: {marginVertical: 20},
 

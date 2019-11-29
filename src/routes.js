@@ -3,12 +3,16 @@ import {createStackNavigator} from 'react-navigation-stack';
 
 import Filter from './pages/Filter';
 import New from './pages/New';
+import ProductFilter from './pages/ProductFilter';
 
 export default createAppContainer(
   createStackNavigator(
     {
       Filter,
-      New,
+      New: {
+        screen: New,
+      },
+      ProductFilter,
     },
     {
       defaultNavigationOptions: {
