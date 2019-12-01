@@ -1,18 +1,38 @@
 import {createAppContainer} from 'react-navigation';
 import {createStackNavigator} from 'react-navigation-stack';
+import {createMaterialBottomTabNavigator} from 'react-navigation-material-bottom-tabs';
 
 import Filter from './pages/Filter';
-import New from './pages/New';
-import ProductFilter from './pages/ProductFilter';
+import Info from './pages/Info';
+import Products from './pages/Products';
+import ItemProduct from './pages/ItemProduct';
+
+const PedidoTabs = createMaterialBottomTabNavigator(
+  {
+    Itens: {
+      screen: ItemProduct,
+      navigationOptions: {
+        tabBarLabel: 'Itens',
+      },
+    },
+    Info: {
+      screen: Info,
+      navigationOptions: {
+        tabBarLabel: 'Info',
+      },
+    },
+  },
+  {initialRouteName: 'Itens', barStyle: {backgroundColor: '#4682B4'}},
+);
 
 export default createAppContainer(
   createStackNavigator(
     {
       Filter,
-      New: {
-        screen: New,
+      Info: {
+        screen: PedidoTabs,
       },
-      ProductFilter,
+      Products,
     },
     {
       defaultNavigationOptions: {

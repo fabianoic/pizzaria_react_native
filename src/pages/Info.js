@@ -1,32 +1,36 @@
-import React from 'react';
+import React, {useEffect, useState} from 'react';
 
-import {View, Text, StyleSheet} from 'react-native';
-import {TouchableOpacity} from 'react-native-gesture-handler';
-import {TextInput} from 'react-native-paper';
+import {View, StyleSheet} from 'react-native';
+import {Text} from 'react-native-paper';
+
+import api from '../services/api';
 
 // import { Container } from './styles';
 
-export default function New({navigation}) {
+export default function Info({navigation}) {
+  const [pedido, setPedido] = useState({});
+  const [usuario, setUsuario] = useState({});
+  useEffect(() => {
+    api
+      .get(`pedido/${navigation.getParam('id')}`)
+      .then(response => {
+        setPedido(response.data);
+        setUsuario(response.data.usuario);
+      })
+      .catch(error => {
+        console.log(error);
+      });
+  });
   return (
     <View style={styles.container}>
-      <TextInput
-        style={styles.input}
-        autoCorrect={false}
-        autoCapitalize="none"
-        placeholder="Mesa"
-        placeholderTextColor="#999"
-      />
-      <TextInput
-        style={styles.input}
-        autoCorrect={false}
-        autoCapitalize="none"
-        placeholder="itens do pedido"
-        placeholderTextColor="#999"
-      />
-
-      <TouchableOpacity style={styles.addButton} onPress={() => {}}>
-        <Text style={styles.addButton}>Adicionar</Text>
-      </TouchableOpacity>
+      <Text>Id: </Text>
+      <Text>{pedido.id}</Text>
+      <Text>Mesa: </Text>
+      <Text>{pedido.mesa}</Text>
+      <Text>Data de criação: </Text>
+      <Text>{pedido.dataCriacao}</Text>
+      <Text>Usuário: </Text>
+      <Text>{usuario.nome}</Text>
     </View>
   );
 }

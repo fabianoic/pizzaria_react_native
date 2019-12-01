@@ -2,13 +2,26 @@ import React, {useState, useEffect} from 'react';
 
 import {View, TouchableOpacity, StyleSheet, FlatList} from 'react-native';
 
-import {Snackbar, Modal, Text, TextInput} from 'react-native-paper';
+import {Text} from 'react-native-paper';
 
 import api from '../services/api';
 
-export default function ProductFilter({navigation}) {
+export default function Products({navigation}) {
   const [produtos, setProdutos] = useState([]);
   const [produto, setProduto] = useState({});
+  const [pedido, setPedido] = useState({});
+
+  const handleCreate = async e => {
+    const response = await api
+      .put(`pedido/${navigation.getParam('id')}`, {
+        ...pedido,
+        itemPedido: {produto},
+      })
+      .catch(error => {});
+    if (response.status !== null && response.status === 201) {
+      navigation.navigate('ItemProduct', response.data);
+    }
+  };
 
   useEffect(() => {
     api
@@ -19,6 +32,9 @@ export default function ProductFilter({navigation}) {
       .catch(error => {
         console.log(error);
       });
+    api.get(`pedido/${navigation.getParam('id')}`).then(response => {
+      setPedido(response.data);
+    });
   });
 
   return (
@@ -30,12 +46,12 @@ export default function ProductFilter({navigation}) {
           renderItem={({item}) => (
             <TouchableOpacity
               onPress={() => {
-                navigation.goBack();
-                console.log(item);
+                setProduto(item);
+                handleCreate();
               }}>
               <View style={styles.listaProdutos}>
                 <Text>{item.descricao}</Text>
-                <Text>{item.preco}</Text>
+                <Text>R${item.preco}</Text>
               </View>
             </TouchableOpacity>
           )}

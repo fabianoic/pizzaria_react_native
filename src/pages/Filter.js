@@ -23,20 +23,31 @@ export default function Filter({navigation}) {
       });
   });
 
+  const handleCreate = async e => {
+    const response = await api
+      .post('pedido/', {
+        mesa,
+      })
+      .catch(error => {
+        setSnackVisible(true);
+      });
+    if (response.status !== null && response.status === 201) {
+      navigation.navigate('Info', response.data);
+    }
+  };
+
   return (
     <>
       <Snackbar
         visible={snackVisible}
         onDismiss={() => setSnackVisible(false)}
         duration={2000.0}>
-        {snackVisible && mesa !== ''
-          ? navigation.navigate('New', {mesa})
-          : 'Favor informe uma mesa.'}
+        {'Favor informe uma mesa.'}
       </Snackbar>
       <TouchableOpacity
         style={styles.mesaButton}
         onPress={() => {
-          navigation.navigate('ProductFilter');
+          setModalVisible(true);
         }}>
         <Text style={styles.addMesaButton}>Adicionar mesa</Text>
       </TouchableOpacity>
@@ -47,7 +58,7 @@ export default function Filter({navigation}) {
           renderItem={({item}) => (
             <TouchableOpacity
               onPress={() => {
-                navigation.navigate('New', item);
+                navigation.navigate('Info', item);
               }}>
               <View style={styles.listMesa}>
                 <Text>Mesa {item.mesa}</Text>
@@ -72,7 +83,7 @@ export default function Filter({navigation}) {
           <TouchableOpacity
             style={styles.modalButton}
             onPress={() => {
-              setSnackVisible(true);
+              handleCreate();
             }}>
             <Text style={styles.addMesaButton}>Adicionar</Text>
           </TouchableOpacity>
