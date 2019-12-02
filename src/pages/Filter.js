@@ -1,10 +1,32 @@
 import React, {useState, useEffect} from 'react';
 
-import {View, TouchableOpacity, StyleSheet, FlatList} from 'react-native';
+import {
+  View,
+  TouchableOpacity,
+  StyleSheet,
+  FlatList,
+  Image,
+} from 'react-native';
 
 import {Snackbar, Modal, Text, TextInput} from 'react-native-paper';
 
 import api from '../services/api';
+
+import plus from '../assets/plus1.png';
+
+export function navigationOptionsFilterScreen({navigation}) {
+  const setModalVisible = navigation.getParam('setModalVisible');
+
+  return {
+    headerRight: (
+      <TouchableOpacity
+        style={styles.image}
+        onPress={() => setModalVisible(true)}>
+        <Image source={plus} />
+      </TouchableOpacity>
+    ),
+  };
+}
 
 export default function Filter({navigation}) {
   const [pedidos, setPedidos] = useState([]);
@@ -13,6 +35,8 @@ export default function Filter({navigation}) {
   const [modalVisible, setModalVisible] = useState(false);
 
   useEffect(() => {
+    navigation.setParams({setModalVisible});
+
     api
       .get('pedido/all')
       .then(response => {
@@ -21,18 +45,38 @@ export default function Filter({navigation}) {
       .catch(error => {
         console.log(error);
       });
-  });
+  }, []);
 
   const handleCreate = async e => {
-    const response = await api
-      .post('pedido/', {
-        mesa,
-      })
-      .catch(error => {
-        setSnackVisible(true);
+    if (!mesa) {
+      setSnackVisible(true);
+      return;
+    }
+
+    const [mesaExistente] = pedidos.filter(p => p.mesa === mesa);
+
+    if (mesaExistente) {
+      alert('Mesa já existente');
+      return;
+    }
+
+    const response = await api.post('pedido/', {
+      mesa,
+    });
+
+    setMesa('');
+
+    if (response.status === 201) {
+      const pedidosAtualizados = [...pedidos, response.data];
+
+      const ordenados = pedidosAtualizados.sort((a, b) => {
+        return a.mesa < b.mesa ? -1 : 1;
       });
-    if (response.status !== null && response.status === 201) {
+
+      setPedidos(ordenados);
+
       navigation.navigate('Info', response.data);
+      setModalVisible(false);
     }
   };
 
@@ -42,65 +86,65 @@ export default function Filter({navigation}) {
         visible={snackVisible}
         onDismiss={() => setSnackVisible(false)}
         duration={2000.0}>
-        {'Favor informe uma mesa.'}
+        {'Favor informe uma mesa não listada.'}
       </Snackbar>
-      <TouchableOpacity
-        style={styles.mesaButton}
-        onPress={() => {
-          setModalVisible(true);
-        }}>
-        <Text style={styles.addMesaButton}>Adicionar mesa</Text>
-      </TouchableOpacity>
       <View style={styles.container}>
-        <FlatList
-          data={pedidos}
-          keyExtractor={(pedido, index) => `list-index-${index}`}
-          renderItem={({item}) => (
-            <TouchableOpacity
-              onPress={() => {
-                navigation.navigate('Info', item);
-              }}>
-              <View style={styles.listMesa}>
-                <Text>Mesa {item.mesa}</Text>
-              </View>
-            </TouchableOpacity>
-          )}
-        />
-      </View>
-      <Modal
-        style={styles.model}
-        animationType="slide"
-        transparent={false}
-        visible={modalVisible}>
-        <View style={styles.modalView}>
-          <Text style={styles.labelMesa}>Cadastro de mesa </Text>
-          <Text>__________________________________________</Text>
-          <TextInput
-            style={styles.inputMesa}
-            placeholder="Digite uma nova mesa"
-            onChangeText={numMesa => setMesa(numMesa)}
+        <View style={styles.container1}>
+          <FlatList
+            data={pedidos}
+            keyExtractor={(pedido, index) => `list-index-${index}`}
+            renderItem={({item}) => (
+              <TouchableOpacity
+                onPress={() => {
+                  navigation.navigate('Info', item);
+                }}>
+                <View style={styles.listMesa}>
+                  <Text style={styles.addMesaButton}>Mesa {item.mesa}</Text>
+                </View>
+              </TouchableOpacity>
+            )}
           />
-          <TouchableOpacity
-            style={styles.modalButton}
-            onPress={() => {
-              handleCreate();
-            }}>
-            <Text style={styles.addMesaButton}>Adicionar</Text>
-          </TouchableOpacity>
-          <TouchableOpacity
-            style={styles.modalButton}
-            onPress={() => {
-              setModalVisible(false);
-            }}>
-            <Text style={styles.addMesaButton}>Cancelar</Text>
-          </TouchableOpacity>
         </View>
-      </Modal>
+        <Modal
+          style={styles.model}
+          animationType="slide"
+          transparent={false}
+          visible={modalVisible}>
+          <View style={styles.modalView}>
+            <Text style={styles.labelMesa}>Cadastro de mesa </Text>
+            <Text>__________________________________________</Text>
+            <TextInput
+              keyboardType="numeric"
+              style={styles.inputMesa}
+              placeholder="Digite uma nova mesa"
+              value={mesa}
+              onChangeText={numMesa => setMesa(numMesa)}
+            />
+            <TouchableOpacity
+              style={styles.modalButton}
+              onPress={() => {
+                handleCreate();
+              }}>
+              <Text style={styles.addMesaButton}>Adicionar</Text>
+            </TouchableOpacity>
+            <TouchableOpacity
+              style={styles.modalButton}
+              onPress={() => {
+                setModalVisible(false);
+              }}>
+              <Text style={styles.addMesaButton}>Cancelar</Text>
+            </TouchableOpacity>
+          </View>
+        </Modal>
+      </View>
     </>
   );
 }
 
 const styles = StyleSheet.create({
+  container: {
+    alignItems: 'center',
+  },
   modalView: {
     borderRadius: 8,
     backgroundColor: 'white',
@@ -118,7 +162,7 @@ const styles = StyleSheet.create({
     marginTop: 10,
     fontWeight: 'bold',
   },
-  container: {
+  container1: {
     flexDirection: 'column',
     flexWrap: 'wrap',
     paddingTop: 10,
@@ -126,8 +170,8 @@ const styles = StyleSheet.create({
   },
   listMesa: {
     height: 100,
-    width: 100,
-    backgroundColor: 'pink',
+    width: 300,
+    backgroundColor: '#353583',
     borderColor: 'black',
     borderWidth: 0.75,
     borderRadius: 4,

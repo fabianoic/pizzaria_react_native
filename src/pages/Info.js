@@ -20,82 +20,47 @@ export default function Info({navigation}) {
       .catch(error => {
         console.log(error);
       });
-  });
+  }, []);
   return (
     <View style={styles.container}>
-      <Text>Id: </Text>
-      <Text>{pedido.id}</Text>
-      <Text>Mesa: </Text>
-      <Text>{pedido.mesa}</Text>
-      <Text>Data de criação: </Text>
-      <Text>{pedido.dataCriacao}</Text>
-      <Text>Usuário: </Text>
-      <Text>{usuario.nome}</Text>
+      <Text style={styles.label}>Id: </Text>
+      <View style={styles.backgrounditem}>
+        <Text style={styles.item}>{pedido.id}</Text>
+      </View>
+      <Text style={styles.label}>Mesa: </Text>
+      <View style={styles.backgrounditem}>
+        <Text style={styles.item}>{pedido.mesa}</Text>
+      </View>
+      <Text style={styles.label}>Data de criação: </Text>
+      <View style={styles.backgrounditem}>
+        <Text style={styles.item}>{pedido.dataCriacao}</Text>
+      </View>
+      <Text style={styles.label}>Usuário: </Text>
+      <View style={styles.backgrounditem}>
+        <Text style={styles.item}>{usuario.nome}</Text>
+      </View>
+      <Text style={styles.label}>Total: </Text>
+      <View style={styles.backgrounditem}>
+        <Text style={styles.item}>R$ {pedido.valorTotal}</Text>
+      </View>
     </View>
   );
 }
 const styles = StyleSheet.create({
-  modalView: {
-    borderRadius: 8,
-    backgroundColor: 'white',
-    marginHorizontal: 20,
-    paddingHorizontal: 20,
-    width: '85%',
-    height: 300,
-  },
-  image: {
-    marginRight: 20,
-  },
-  labelMesa: {
-    fontSize: 27,
-    textAlign: 'center',
-    marginTop: 10,
-    fontWeight: 'bold',
-  },
   container: {
-    flexDirection: 'column',
-    flexWrap: 'wrap',
-    paddingTop: 10,
-    paddingHorizontal: 5,
-  },
-  listMesa: {
-    height: 100,
-    width: 100,
-    backgroundColor: 'pink',
-    borderColor: 'black',
-    borderWidth: 0.75,
-    borderRadius: 4,
-    marginHorizontal: 5,
+    marginHorizontal: 10,
     marginVertical: 5,
-    justifyContent: 'center',
-    alignItems: 'center',
   },
-  inputMesa: {marginVertical: 20},
-
-  mesaButton: {
-    backgroundColor: '#4682B4',
-    borderRadius: 4,
-    height: '10%',
-    width: '85%',
-    justifyContent: 'center',
-    alignItems: 'center',
-    marginVertical: 5,
-    marginHorizontal: 20,
-  },
-  addMesaButton: {
+  label: {
+    marginHorizontal: 15,
+    marginVertical: 10,
+    fontSize: 25,
     fontWeight: 'bold',
-    fontSize: 16,
-    color: '#FFF',
   },
-  modalButton: {
-    backgroundColor: '#4682B4',
+  item: {marginHorizontal: 30, fontSize: 20, color: 'white'},
+  backgrounditem: {
+    backgroundColor: '#353583',
+    opacity: 1,
     borderRadius: 4,
-    flexDirection: 'row',
-    justifyContent: 'center',
-    alignItems: 'center',
-    marginTop: 10,
-    marginBottom: 5,
-    marginHorizontal: 20,
-    height: '14%',
   },
 });

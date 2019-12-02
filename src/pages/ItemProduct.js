@@ -8,13 +8,28 @@ import {
 } from 'react-native';
 import {Text} from 'react-native-paper';
 
+import plus from '../assets/plus1.png';
 import api from '../services/api';
+
+export function navigationOptionsItemProductScreen({navigation}) {
+  const id = navigation.getParam('id');
+  return {
+    headerRight: (
+      <TouchableOpacity
+        style={styles.image}
+        onPress={() => navigation.navigate('Products', id)}>
+        <Image source={plus} />
+      </TouchableOpacity>
+    ),
+  };
+}
 
 export default function ItemProduct({navigation}) {
   const [pedido, setPedido] = useState({});
   const [produtos, setProdutos] = useState([]);
 
   useEffect(() => {
+    navigation.setParams({pedido});
     api
       .get(`pedido/${navigation.getParam('id')}`)
       .then(response => {
@@ -24,27 +39,30 @@ export default function ItemProduct({navigation}) {
       .catch(error => {
         console.log(error);
       });
-  });
+  }, []);
 
   return (
     <>
-      <TouchableOpacity
-        style={styles.mesaButton}
-        onPress={() => {
-          navigation.navigate('Products', pedido);
-        }}>
-        <Text style={styles.addMesaButton}>Adicionar item</Text>
-      </TouchableOpacity>
       <View style={styles.container}>
-        <FlatList
-          data={produtos}
-          keyExtractor={(prod, index) => `list-index-${index}`}
-          renderItem={({item}) => (
-            <View style={styles.listaProdutos}>
-              <Text>teste</Text>
-            </View>
-          )}
-        />
+        <View style={styles.container1}>
+          <FlatList
+            data={produtos}
+            keyExtractor={(prod, index) => `list-index-${index}`}
+            renderItem={({item}) => (
+              <View style={styles.listaProdutos}>
+                <Text style={styles.addMesaButton}>
+                  {item.produto.descricao}
+                </Text>
+                <Text style={styles.addMesaButton}>
+                  Quantidade: {item.quantidade}
+                </Text>
+                <Text style={styles.addMesaButton}>
+                  R$ {item.produto.preco * item.quantidade}
+                </Text>
+              </View>
+            )}
+          />
+        </View>
       </View>
     </>
   );
@@ -52,6 +70,12 @@ export default function ItemProduct({navigation}) {
 
 const styles = StyleSheet.create({
   container: {
+    alignItems: 'center',
+  },
+  image: {
+    marginRight: 20,
+  },
+  container1: {
     flexDirection: 'column',
     flexWrap: 'wrap',
     paddingTop: 10,
@@ -59,8 +83,8 @@ const styles = StyleSheet.create({
   },
   listaProdutos: {
     height: 100,
-    width: 100,
-    backgroundColor: 'pink',
+    width: 300,
+    backgroundColor: '#353583',
     borderColor: 'black',
     borderWidth: 0.75,
     borderRadius: 4,
@@ -85,6 +109,3 @@ const styles = StyleSheet.create({
     color: '#FFF',
   },
 });
-
-//<Text>{item.descricao}</Text>
-//<Text>{item.preco}</Text>
