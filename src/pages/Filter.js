@@ -13,7 +13,6 @@ import {Snackbar, Modal, Text, TextInput} from 'react-native-paper';
 import api from '../services/api';
 
 import plus from '../assets/plus1.png';
-import AsyncStorage from '@react-native-community/async-storage';
 
 export function navigationOptionsFilterScreen({navigation}) {
   const setModalVisible = navigation.getParam('setModalVisible');
@@ -37,7 +36,6 @@ export default function Filter({navigation}) {
 
   useEffect(() => {
     navigation.setParams({setModalVisible});
-
     api
       .get('pedido/all')
       .then(response => {
@@ -49,8 +47,6 @@ export default function Filter({navigation}) {
   }, []);
 
   const handleCreate = async e => {
-    const user = await AsyncStorage.getItem('usuarioLogado');
-
     if (!mesa) {
       setSnackVisible(true);
       return;
@@ -63,10 +59,13 @@ export default function Filter({navigation}) {
       return;
     }
 
-    const response = await api.post('pedido/', {
-      mesa,
-      user,
-    });
+    const response = await api
+      .post('pedido/', {
+        mesa,
+      })
+      .catch(error => {
+        console.log(error);
+      });
 
     setMesa('');
 

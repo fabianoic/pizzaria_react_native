@@ -50,7 +50,7 @@ export default function Info({navigation}) {
       </View>
       <Text style={styles.label}>Total: </Text>
       <View style={styles.backgrounditem}>
-        <Text style={styles.item}>R$ {pedido.valorTotal.toFixed(2)}</Text>
+        <Text style={styles.item}>R$ {pedido.valorTotal}</Text>
       </View>
     </View>
   );

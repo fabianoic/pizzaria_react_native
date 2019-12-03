@@ -2,7 +2,7 @@ import React, {useState} from 'react';
 
 import {View, TouchableOpacity, StyleSheet} from 'react-native';
 
-import {Snackbar, Modal, Text, TextInput} from 'react-native-paper';
+import {Snackbar, Text, TextInput} from 'react-native-paper';
 
 import api from '../services/api';
 import AsyncStorage from '@react-native-community/async-storage';
