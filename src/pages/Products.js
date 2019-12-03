@@ -8,12 +8,15 @@ import api from '../services/api';
 
 export default function Products({navigation}) {
   const [produtos, setProdutos] = useState({});
-  const [qtd, setQtd] = useState(0);
+  const [qtd, setQtd] = useState('');
   const [item, setItem] = useState({});
   const [modalVisible, setModalVisible] = useState(false);
   const [pedido, setPedido] = useState({});
 
   useEffect(() => {
+    console.log('Pedido ', navigation.getParam('pedido'));
+    console.log(navigation.getParam('callbackAddItem'));
+
     api
       .get('produto/all')
       .then(response => {
@@ -29,24 +32,19 @@ export default function Products({navigation}) {
       .post('itempedido/', {
         produto: item,
         quantidade: qtd,
+        pedido: navigation.getParam('pedido'),
       })
       .catch(error => {
         console.log(error);
       });
 
     if (response.status === 201) {
-      const res = await api
-        .put('pedido', {
-          ...pedido,
-          itemPedido: [
-            ...pedido.itemPedido,
-            {id: response.data.id, produto: item, quantidade: qtd},
-          ],
-        })
-        .catch(error => {
-          console.log(error);
-        });
-      navigation.goBack();
+     // const callbackAddItem = navigation.getParam('callbackAddItem');
+
+   //   console.log(callbackAddItem);
+     // callbackAddItem(response.data);
+      setModalVisible(false);
+      navigation.navigate('Itens');
     }
   };
 
@@ -85,6 +83,7 @@ export default function Products({navigation}) {
             keyboardType="numeric"
             style={styles.inputMesa}
             placeholder="Digite a quantidade"
+            value={qtd}
             onChangeText={qtdItem => setQtd(qtdItem)}
           />
           <TouchableOpacity

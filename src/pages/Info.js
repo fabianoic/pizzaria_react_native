@@ -5,14 +5,17 @@ import {Text} from 'react-native-paper';
 
 import api from '../services/api';
 
+import {NavigationEvents} from 'react-navigation';
+
 // import { Container } from './styles';
 
 export default function Info({navigation}) {
   const [pedido, setPedido] = useState({});
   const [usuario, setUsuario] = useState({});
-  useEffect(() => {
+
+  const atualizaPedido = () => {
     api
-      .get(`pedido/${navigation.getParam('id')}`)
+      .get(`pedido/${navigation.getParam('pedido').id}`)
       .then(response => {
         setPedido(response.data);
         setUsuario(response.data.usuario);
@@ -20,9 +23,15 @@ export default function Info({navigation}) {
       .catch(error => {
         console.log(error);
       });
+  };
+
+  useEffect(() => {
+    atualizaPedido();
   }, []);
   return (
     <View style={styles.container}>
+      <NavigationEvents onWillFocus={payload => atualizaPedido()} />
+
       <Text style={styles.label}>Id: </Text>
       <View style={styles.backgrounditem}>
         <Text style={styles.item}>{pedido.id}</Text>
@@ -41,7 +50,7 @@ export default function Info({navigation}) {
       </View>
       <Text style={styles.label}>Total: </Text>
       <View style={styles.backgrounditem}>
-        <Text style={styles.item}>R$ {pedido.valorTotal}</Text>
+        <Text style={styles.item}>R$ {pedido.valorTotal.toFixed(2)}</Text>
       </View>
     </View>
   );
@@ -62,5 +71,6 @@ const styles = StyleSheet.create({
     backgroundColor: '#353583',
     opacity: 1,
     borderRadius: 4,
+    paddingVertical: 8,
   },
 });

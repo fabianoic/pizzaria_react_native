@@ -1,4 +1,5 @@
 import React, {useState, useEffect} from 'react';
+import {NavigationEvents} from 'react-navigation';
 import {
   View,
   TouchableOpacity,
@@ -12,12 +13,18 @@ import plus from '../assets/plus1.png';
 import api from '../services/api';
 
 export function navigationOptionsItemProductScreen({navigation}) {
-  const id = navigation.getParam('id');
+  const pedido = navigation.getParam('pedido');
+  const callbackAddItem = navigation.getParam('cb');
+
+  console.log('NAVIGATIONOPTIONS', callbackAddItem);
+
   return {
     headerRight: (
       <TouchableOpacity
         style={styles.image}
-        onPress={() => navigation.navigate('Products', id)}>
+        onPress={() =>
+          navigation.navigate('Products', {pedido, callbackAddItem})
+        }>
         <Image source={plus} />
       </TouchableOpacity>
     ),
@@ -25,24 +32,38 @@ export function navigationOptionsItemProductScreen({navigation}) {
 }
 
 export default function ItemProduct({navigation}) {
-  const [pedido, setPedido] = useState({});
   const [produtos, setProdutos] = useState([]);
 
-  useEffect(() => {
-    navigation.setParams({pedido});
+  function callbackAddItem(item) {
+    setProdutos({
+      ...produtos,
+      item,
+    });
+  }
+
+  const atualizaPedido = () => {
+    const pedido = navigation.getParam('pedido');
+
     api
-      .get(`pedido/${navigation.getParam('id')}`)
+      .get(`pedido/${pedido.id}`)
       .then(response => {
-        setPedido(response.data);
         setProdutos(response.data.itemPedido);
+        console.log('Pedido API', response.data);
+        navigation.setParams({pedido: response.data, cb: callbackAddItem});
       })
       .catch(error => {
         console.log(error);
       });
+  };
+
+  useEffect(() => {
+    console.log('CHAMOU USE EFFECT');
+    atualizaPedido();
   }, []);
 
   return (
     <>
+      <NavigationEvents onWillFocus={payload => atualizaPedido()} />
       <View style={styles.container}>
         <View style={styles.container1}>
           <FlatList

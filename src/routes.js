@@ -5,6 +5,7 @@ import {createMaterialBottomTabNavigator} from 'react-navigation-material-bottom
 import Filter, {navigationOptionsFilterScreen} from './pages/Filter';
 import Info from './pages/Info';
 import Products from './pages/Products';
+import Login from './pages/Login';
 import ItemProduct, {
   navigationOptionsItemProductScreen,
 } from './pages/ItemProduct';
@@ -37,6 +38,7 @@ export default createAppContainer(
         screen: Filter,
         navigationOptions: navigationOptionsFilterScreen,
       },
+      Login,
       Info: {
         screen: PedidoTabs,
         navigationOptions: navigationOptionsItemProductScreen,
