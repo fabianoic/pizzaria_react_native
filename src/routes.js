@@ -9,6 +9,7 @@ import ItemProduct, {
   navigationOptionsItemProductScreen,
 } from './pages/ItemProduct';
 
+//rotas para mostrar as abas no bottom de itens e informações
 const PedidoTabs = createMaterialBottomTabNavigator(
   {
     Itens: {
@@ -30,6 +31,7 @@ const PedidoTabs = createMaterialBottomTabNavigator(
   },
 );
 
+//rotas para as paginas de listagem de mesa, informações da mesa e lista de produtos
 export default createAppContainer(
   createStackNavigator(
     {

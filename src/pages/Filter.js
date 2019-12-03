@@ -1,3 +1,5 @@
+//Pagina de listagem das mesas cadastradas
+
 import React, {useState, useEffect} from 'react';
 
 import {
@@ -40,6 +42,7 @@ export default function Filter({navigation}) {
       .get('pedido/all')
       .then(response => {
         setPedidos(response.data);
+        console.log('entrou');
       })
       .catch(error => {
         console.log(error);

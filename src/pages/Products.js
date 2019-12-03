@@ -1,3 +1,6 @@
+//Pagina para listar produtos cadastrados que podem ser inseridos no pedido
+
+
 import React, {useState, useEffect} from 'react';
 
 import {View, TouchableOpacity, StyleSheet, FlatList} from 'react-native';

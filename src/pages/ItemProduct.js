@@ -1,3 +1,4 @@
+//Pagina para listar itens que foram inseridos no pedido
 import React, {useState, useEffect} from 'react';
 import {NavigationEvents} from 'react-navigation';
 import {

@@ -1,3 +1,5 @@
+//tela mostra as informações da mesa, como id, mesa, data de criação, total...
+
 import React, {useEffect, useState} from 'react';
 
 import {View, StyleSheet} from 'react-native';
